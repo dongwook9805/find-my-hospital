@@ -1,0 +1,206 @@
+.app-shell {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.hero h1 {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  color: #0f172a;
+}
+
+.hero p {
+  margin: 0;
+  color: #475569;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow:
+    0 20px 45px -20px rgba(15, 23, 42, 0.2),
+    0 2px 12px -4px rgba(15, 23, 42, 0.1);
+  padding: 2rem;
+}
+
+.form {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background: #f8fafc;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  background: #ffffff;
+}
+
+.form-group small {
+  color: #64748b;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.actions button {
+  flex: 1 1 200px;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.actions button[type="submit"] {
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: white;
+}
+
+.actions .secondary {
+  background: #e2e8f0;
+  color: #1f2937;
+}
+
+.actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+  transform: none;
+  box-shadow: none;
+}
+
+.actions button:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -16px rgba(15, 23, 42, 0.5);
+}
+
+.alert {
+  margin-top: 1.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+}
+
+.alert.error {
+  background: rgba(220, 38, 38, 0.12);
+  color: #991b1b;
+}
+
+.results {
+  margin-top: 2rem;
+  display: grid;
+  gap: 1.75rem;
+}
+
+.results h2 {
+  margin-bottom: 0.75rem;
+  color: #0f172a;
+}
+
+.results ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.hospital-list li {
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: #f8fafc;
+}
+
+.hospital-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hospital-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #1e293b;
+}
+
+.map-links {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.map-links a {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.open-button {
+  margin-top: 0.75rem;
+  width: 100%;
+  padding: 0.65rem 1rem;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.open-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px -16px rgba(15, 23, 42, 0.5);
+}
+
+.open-button:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  .card {
+    padding: 1.5rem;
+  }
+
+  .hospital-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+}
