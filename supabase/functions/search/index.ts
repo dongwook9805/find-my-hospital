@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.43.4";
 
 type SearchRequest = {
   symptom: string;
+  region?: string;
 };
 
 type DepartmentResult = {
@@ -61,7 +62,7 @@ async function fetchDepartments(symptom: string): Promise<string[]> {
       "Authorization": `Bearer ${openAiApiKey}`,
     },
     body: JSON.stringify({
-      model: Deno.env.get("OPENAI_MODEL") ?? "gpt-5",
+      model: Deno.env.get("OPENAI_MODEL") ?? "gpt-5-mini",
       messages: [
         { role: "system", content: system },
         { role: "user", content: `증상: ${symptom}` },
@@ -231,7 +232,7 @@ serve(async (req: Request): Promise<Response> => {
     });
   }
 
-  const { symptom } = payload;
+  const { symptom, region } = payload;
 
   if (!symptom || typeof symptom !== "string") {
     return new Response(JSON.stringify({ error: "symptom is required" }), {
@@ -244,11 +245,14 @@ serve(async (req: Request): Promise<Response> => {
     const departments = await fetchDepartments(symptom);
     await logQuery(symptom, departments);
 
-    const searches: DepartmentResult["searches"] = departments.map((department) => ({
-      department,
-      webUrl: `https://map.naver.com/v5/search/${encodeURIComponent(department)}`,
-      appUrl: `nmap://search?query=${encodeURIComponent(department)}`,
-    }));
+    const searches: DepartmentResult["searches"] = departments.map((department) => {
+      const query = region ? `${region} ${department}` : department;
+      return {
+        department,
+        webUrl: `https://map.naver.com/v5/search/${encodeURIComponent(query)}`,
+        appUrl: `nmap://search?query=${encodeURIComponent(query)}`,
+      };
+    });
 
     const body: DepartmentResult = { departments, searches };
 

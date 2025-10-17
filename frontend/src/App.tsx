@@ -12,6 +12,7 @@ type SearchResponse = {
 
 export default function App() {
   const [symptom, setSymptom] = useState("");
+  const [region, setRegion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [response, setResponse] = useState<SearchResponse | null>(null);
@@ -40,6 +41,7 @@ export default function App() {
     try {
       const payload = {
         symptom: symptom.trim(),
+        region: region.trim() || undefined,
       };
 
       const res = await fetch(edgeUrl, {
@@ -66,6 +68,7 @@ export default function App() {
 
   const handleClear = () => {
     setSymptom("");
+    setRegion("");
     setResponse(null);
     setError(null);
   };
@@ -79,6 +82,18 @@ export default function App() {
 
       <section className="card">
         <form className="form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="region">지역 (선택)</label>
+            <input
+              id="region"
+              type="text"
+              placeholder="예: 서울 강남구"
+              value={region}
+              onChange={(event) => setRegion(event.target.value)}
+            />
+            <small>지역을 지정하면 해당 지역 + 진료과로 네이버 지도 검색을 열어줍니다.</small>
+          </div>
+
           <div className="form-group">
             <label htmlFor="symptom">증상</label>
             <textarea
