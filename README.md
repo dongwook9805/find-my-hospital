@@ -2,7 +2,7 @@
 
 Find My Hospital is an MVP that helps Korean users enter symptoms, map them to likely medical departments with GPT-5, and jump straight to Naver Map searches. The project ships with:
 
-- Supabase Edge Function (`search`) that orchestrates GPT-5 (server-side key), builds Naver search URLs (optionally scoped to a region), adds CORS, and logs usage.
+- Supabase Edge Function (`search`) that orchestrates GPT-5 (server-side key), maps symptoms to a curated list of 14 주요 진료과, builds Naver search URLs (optionally scoped to a region), adds CORS, and logs usage.
 - SQL migration to create a `queries` table for simple analytics.
 - React (Vite + TypeScript) frontend designed for deployment on GitHub Pages.
 
@@ -112,9 +112,11 @@ This script uses `gh-pages` to publish the `dist` folder to the `gh-pages` branc
 
 - **Response** (`200 OK`):
 
+Departments are always chosen from the following set: 내과, 외과, 신경외과, 정형외과, 성형외과, 산부인과, 피부과, 안과, 비뇨의학과, 이비인후과, 정신건강의학과, 소아청소년과, 재활의학과, 치과.
+
 ```json
 {
-  "departments": ["내과", "감염내과"],
+  "departments": ["내과", "정형외과"],
   "searches": [
     {
       "department": "내과",
@@ -132,3 +134,4 @@ Errors return JSON with an `error` field and an appropriate HTTP status code.
 - Add rate limiting/auth middleware if you need to protect the Edge Function.
 - Expand logging/analytics with user identifiers (if available) in `queries`.
 - Prefetch Naver results or integrate additional data sources for richer suggestions.
+- Add 세부 진료과 설명이나 대표 증상 정보를 UI에 확장.

@@ -15,6 +15,52 @@ type DepartmentResult = {
   }>;
 };
 
+const allowedDepartments = [
+  "내과",
+  "외과",
+  "신경외과",
+  "정형외과",
+  "성형외과",
+  "산부인과",
+  "피부과",
+  "안과",
+  "비뇨의학과",
+  "이비인후과",
+  "정신건강의학과",
+  "소아청소년과",
+  "재활의학과",
+  "치과",
+];
+
+const normalizedAllowed = allowedDepartments.map((name) => normalizeDepartment(name));
+
+function normalizeDepartment(value: string): string {
+  return value
+    .normalize("NFC")
+    .replace(/\s+/g, "")
+    .replace(/과+$/u, "과");
+}
+
+function mapToAllowedDepartments(candidates: string[]): string[] {
+  const results: string[] = [];
+
+  for (const candidate of candidates) {
+    const normalizedCandidate = normalizeDepartment(candidate);
+    const matchIndex = normalizedAllowed.findIndex((normalized) =>
+      normalizedCandidate.includes(normalized) || normalized.includes(normalizedCandidate)
+    );
+
+    if (matchIndex !== -1) {
+      const department = allowedDepartments[matchIndex];
+      if (!results.includes(department)) {
+        results.push(department);
+      }
+    }
+  }
+
+  return results;
+}
+
 const allowedOrigin = Deno.env.get("ALLOWED_ORIGIN") ?? "*";
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -51,8 +97,9 @@ async function fetchDepartments(symptom: string): Promise<string[]> {
   }
   const system = [
     "You are a medical triage assistant for Korean patients.",
-    "Given the user's symptoms, respond with a JSON array (1-3 items) of Korean medical departments (과).",
-    "Only respond with the JSON array, no additional text.",
+    "Only choose from the following department names: 내과, 외과, 신경외과, 정형외과, 성형외과, 산부인과, 피부과, 안과, 비뇨의학과, 이비인후과, 정신건강의학과, 소아청소년과, 재활의학과, 치과.",
+    "Given the user's symptoms, respond with a JSON array (1-3 unique items) where each item is exactly one of the allowed department names.",
+    "Respond with the JSON array only, without extra text.",
   ].join(" ");
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -62,7 +109,7 @@ async function fetchDepartments(symptom: string): Promise<string[]> {
       "Authorization": `Bearer ${openAiApiKey}`,
     },
     body: JSON.stringify({
-      model: Deno.env.get("OPENAI_MODEL") ?? "gpt-5-mini",
+      model: Deno.env.get("OPENAI_MODEL") ?? "gpt-5-nano",
       messages: [
         { role: "system", content: system },
         { role: "user", content: `증상: ${symptom}` },
@@ -114,16 +161,19 @@ async function fetchDepartments(symptom: string): Promise<string[]> {
 
   try {
     const parsed = JSON.parse(cleanedContent);
-    const departments = extractDepartments(parsed);
-    if (departments.length > 0) return departments;
+    const extracted = extractDepartments(parsed);
+    const mapped = mapToAllowedDepartments(extracted);
+    if (mapped.length > 0) return mapped;
 
     throw new Error("Unexpected JSON structure from OpenAI.");
   } catch (error) {
     const fallback = extractFromText(cleanedContent);
-    if (fallback.length > 0) {
-      return fallback;
+    const mappedFallback = mapToAllowedDepartments(fallback);
+    if (mappedFallback.length > 0) {
+      return mappedFallback;
     }
-    throw new Error(`Failed to parse OpenAI content: ${error instanceof Error ? error.message : String(error)}`);
+    console.warn("[search] Failed to map GPT output, returning defaults.", cleanedContent);
+    return allowedDepartments.slice(0, 3);
   }
 }
 
